@@ -141,8 +141,8 @@ class DecoderCup(nn.Layer):
 class TransUnet(nn.Layer):
     def __init__(self,num_classes=4):
         super().__init__()
-        self.hybrid=ResNet50()
-        self.transfomer=ViT_base_patch16_224()
+        self.hybrid=ResNet50(pretrained=True)
+        self.transfomer=ViT_base_patch16_224(pretrained=True)
         self.decoder = DecoderCup()
         self.segmentation_head = SegmentationHead(
             in_channels=16,
