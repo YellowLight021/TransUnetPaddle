@@ -18,7 +18,7 @@ https://github.com/Beckschen/TransUNet
 注意：本文复现环境是在baiduaistudio上的notebook环境，所以有些配置参数也是基于notebook环境的。
 如果想完全跑通该repo在其他环境下也可自行更改一些路径配置，比较简单此处不在啰嗦。
 
-在synapse的测试集的测试效果如下表,达到验收指标，dice-Score=0.7748   满足精度要求 0.7801
+在synapse的测试集的测试效果如下表,达到验收指标，mm
 
 2022-08-23 12:24:53 [INFO]	[EVAL] #Images: 12, Dice: 0.7801, Loss: 1.607945
 2022-08-23 12:24:53 [INFO]	[EVAL] Class dice: 
@@ -30,19 +30,35 @@ https://github.com/Beckschen/TransUNet
 ## 3.环境依赖
 通过以下命令安装对应依赖
 ```shell
-!pip install -r PaddleSeg/contrib/MedicalSeg/requirements.txt
+!pip install -r TransUnetPaddle/contrib/MedicalSeg/requirements.txt
 ```
 
 ## 4.数据集
 
 下载地址:
 
-[https://www.synapse.org/#!Synapse:syn3193805/wiki/217789)
+[https://www.synapse.org/#!Synapse:syn3193805/wiki/217789）
+或者使用aistudio平台上数据集[https://aistudio.baidu.com/aistudio/datasetdetail/166107)
 
-数据集从下载到解压预处理使用prepare_synapse.py处理。执行以下命令。
+数据集从下载完成后进行到解压操作
+预处理使用prepare_synapse.py处理。执行以下命令。
+
+解压数据集到你自己定义的文件夹下(如此处我定义了一个SynaDataset的文件夹)
+```shell
+!mkdir SynaDataset
+!unzip RawData.zip -d SynaDataset
+```
+
+执行prepare_synapse.py脚本对原来的数据进行必要的预处理操作。
+
+其中--raw_folder为解压后Training文件夹所在路径（如下面命令我是在aistudio下执行的）
+
+其中--save_path为处理后的数据保存路径
+
+其中 --split_val为验证集在总数据集的占比
 
 ```shell
-cd PaddleSeg/contrib/MedicalSeg/tools
+cd TransUnetPaddle/contrib/MedicalSeg/tools
 python prepare_synapse.py --raw_folder /home/aistudio/SynaDataset/RawData/Training \
 --save_path /home/aistudio/SynaDataset/preprocessed --split_val 0.4
 ```
@@ -55,8 +71,8 @@ python prepare_synapse.py --raw_folder /home/aistudio/SynaDataset/RawData/Traini
 
 ```shell
 # Train the model: see the train.py for detailed explanation on script args
-cd PaddleSeg/contrib/MedicalSeg/
-!python train.py --config /home/aistudio/PaddleSeg/contrib/MedicalSeg/configs/synapse/transUnet_synapse.yml \
+cd TransUnetPaddle/contrib/MedicalSeg/
+!python train.py --config /home/aistudio/TransUnetPaddle/contrib/MedicalSeg/configs/synapse/transUnet_synapse.yml \
  --save_interval 1000 --save_dir /home/aistudio/train_model_out --num_workers 4 --do_eval \
  --log_iters 20 --sw_num 1 --is_save_data False --has_dataset_json False >>train.log
 ```
@@ -152,8 +168,8 @@ cd PaddleSeg/contrib/MedicalSeg/
 
 
 ```shell
-%cd /home/aistudio/PaddleSeg/contrib/MedicalSeg/
-!python val.py --config /home/aistudio/PaddleSeg/contrib/MedicalSeg/configs/synapse/transUnet_synapse.yml \
+%cd /home/aistudio/TransUnetPaddle/contrib/MedicalSeg/
+!python val.py --config /home/aistudio/TransUnetPaddle/contrib/MedicalSeg/configs/synapse/transUnet_synapse.yml \
 --model_path  /home/aistudio/train_model_out/best_model/model.pdparams --save_dir /home/aistudio/train_model_out/best_model/ \
 --num_workers 1 --sw_num 1 --is_save_data False --has_dataset_json False
 ```
@@ -166,8 +182,8 @@ cd PaddleSeg/contrib/MedicalSeg/
 输出如下：
 
 ```shell
-/home/aistudio/PaddleSeg/contrib/MedicalSeg
-/home/aistudio/PaddleSeg/contrib/MedicalSeg/medicalseg/cvlibs/config.py:451: UserWarning: Warning: The data dir now is /home/aistudio/PaddleSeg/contrib/MedicalSeg/data/, you should change the data_root in the global.yml if this directory didn't have enough space
+/home/aistudio/TransUnetPaddle/contrib/MedicalSeg
+/home/aistudio/TransUnetPaddle/contrib/MedicalSeg/medicalseg/cvlibs/config.py:451: UserWarning: Warning: The data dir now is /home/aistudio/PaddleSeg/contrib/MedicalSeg/data/, you should change the data_root in the global.yml if this directory didn't have enough space
   .format(absolute_data_dir))
 2022-08-23 12:23:37 [INFO]	
 ---------------Config Information---------------
@@ -274,8 +290,8 @@ Downloading ViT_base_patch16_224_pretrained.pdparams
 调试过程中参考这份文档   [报错调试](https://www.paddlepaddle.org.cn/documentation/docs/zh/guides/04_dygraph_to_static/debugging_cn.html)
 
 ```shell
-%cd /home/aistudio/PaddleSeg/contrib/MedicalSeg/
-!python export.py --config /home/aistudio/PaddleSeg/contrib/MedicalSeg/configs/synapse/transUnet_synapse.yml \
+%cd /home/aistudio/TransUnetPaddle/contrib/MedicalSeg/
+!python export.py --config /home/aistudio/TransUnetPaddle/contrib/MedicalSeg/configs/synapse/transUnet_synapse.yml \
 --save_dir /home/aistudio/staticmodel/  \
 --model_path /home/aistudio/train_model_out/best_model/model.pdparams \
 --without_argmax --input_shape 1 1 1 224 224
@@ -292,7 +308,7 @@ Downloading ViT_base_patch16_224_pretrained.pdparams
 可以使用infer.py脚本进行测试(需要安装autolog，安装方式参考下文tipc测试那边介绍)
 
 ```shell
-%cd /home/aistudio/PaddleSeg/contrib/MedicalSeg/
+%cd /home/aistudio/TransUnetPaddle/contrib/MedicalSeg/
 !python deploy/python/infer.py --config /home/aistudio/staticmodel/deploy.yaml \
 --image_path /home/aistudio/SynaDataset/preprocessed/val/img/ \
 --benchmark True --save_dir /home/aistudio/staticinferlabel \
@@ -326,9 +342,9 @@ pip3 install ./dist/auto_log-1.2.0-py3-none-any.whl
 
 
 ```shell
-%cd /home/aistudio/PaddleSeg/contrib/MedicalSeg/
+%cd /home/aistudio/TransUnetPaddle/contrib/MedicalSeg/
 !bash test_tipc/prepare.sh ./test_tipc/configs/transUnet/train_infer_python.txt 'lite_train_lite_infer'
-%cd /home/aistudio/PaddleSeg/contrib/MedicalSeg/
+%cd /home/aistudio/TransUnetPaddle/contrib/MedicalSeg/
 !bash ./test_tipc/test_train_inference_python.sh ./test_tipc/configs/transUnet/train_infer_python.txt 'lite_train_lite_infer'
 ```
 
