@@ -20,9 +20,9 @@ trainer_list=$(func_parser_value "${lines[14]}")
 # MODE be one of ['lite_train_lite_infer']
 if [ ${MODE} = "lite_train_lite_infer" ];then
 
-    mkdir -p ./test_tipc/data
-    rm -rf ./test_tipc/data/mini_levir_dataset
+    # mkdir -p ./test_tipc/data
+    # rm -rf ./test_tipc/data/mini_levir_dataset
     cd ./test_tipc/data/
-    wget https://bj.bcebos.com/paddleseg/dataset/mini_brainT_dataset.zip
-    unzip mini_brainT_dataset.zip  && cd ../../
+    # wget https://bj.bcebos.com/paddleseg/dataset/mini_brainT_dataset.zip
+    unzip mini_synapse.zip  && cd ../../
 fi

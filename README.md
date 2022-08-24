@@ -310,7 +310,36 @@ Downloading ViT_base_patch16_224_pretrained.pdparams
 静态推理图
 ![test](documentation/pred.png)
 
+### TIPC基础链条测试
 
+该部分依赖auto_log，需要进行安装，安装方式如下：
+
+auto_log的详细介绍参考[https://github.com/LDOUBLEV/AutoLog](https://github.com/LDOUBLEV/AutoLog)。
+
+```shell
+git clone https://github.com/LDOUBLEV/AutoLog
+cd   AutoLog/
+pip3 install -r requirements.txt
+python3 setup.py bdist_wheel
+pip3 install ./dist/auto_log-1.2.0-py3-none-any.whl
+```
+
+
+```shell
+%cd /home/aistudio/PaddleSeg/contrib/MedicalSeg/
+!bash test_tipc/prepare.sh ./test_tipc/configs/transUnet/train_infer_python.txt 'lite_train_lite_infer'
+%cd /home/aistudio/PaddleSeg/contrib/MedicalSeg/
+!bash ./test_tipc/test_train_inference_python.sh ./test_tipc/configs/transUnet/train_infer_python.txt 'lite_train_lite_infer'
+```
+
+测试结果如截图所示
+![test](documentation/prepare_tipc.png)
+![test](documentation/tipc_run1.png)
+![test](documentation/tipc_run2.png)
+![test](documentation/tipc_run3.png)
+![test](documentation/tipc_run4.png)
+![test](documentation/tipc_run5.png)
+![test](documentation/tipc_run6.png)
 
 
 ## 6.代码结构与详细说明
